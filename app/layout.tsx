@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
+import SyncUser from "@/components/SyncUser";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <div>
           <ClerkProvider>
+            {/* 
+              SyncUser runs silently on the server.
+              If a user is logged in, it ensures they exist in MongoDB.
+            */}
+            <SyncUser />
+
             {/* Navbar and other components */}
             <Navbar />
             {children}
