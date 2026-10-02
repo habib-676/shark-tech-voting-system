@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import SyncUser from "@/components/SyncUser";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {/* Navbar and other components */}
             <Navbar />
             {children}
+
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "#020617", // slate-950
+                  color: "#f1f5f9", // slate-100
+                  border: "1px solid #1e293b", // slate-800
+                },
+              }}
+            />
           </ClerkProvider>
         </div>
       </body>
