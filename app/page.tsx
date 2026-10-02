@@ -1,6 +1,14 @@
 import Link from "next/link";
+import clientPromise from "@/lib/mongodb";
 
-export default function Home() {
+export default async function Home() {
+  const client = await clientPromise;
+  const db = client.db("SHARK_TECH_DB");
+  const settings = await db
+    .collection("settings")
+    .findOne({ _id: "system_settings" });
+  const isLive = settings?.votingIsLive || false;
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
       {/* Background Glow Overlay */}
@@ -64,7 +72,18 @@ export default function Home() {
             <span className="text-xs uppercase text-slate-400 font-medium">
               Voting Status
             </span>
-            <p className="text-2xl font-bold text-rose-400 mt-1">Live Now</p>
+            <p
+              className={`text-2xl font-bold mt-1 ${isLive ? "text-rose-400" : "text-slate-500"}`}
+            >
+              {isLive ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />{" "}
+                  Live Now
+                </span>
+              ) : (
+                "Closed"
+              )}
+            </p>
           </div>
         </div>
       </section>
