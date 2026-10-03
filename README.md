@@ -1,656 +1,423 @@
-# 🦈 Shark Tech
+# 🦈 Shark Tech Voting
 
-> **Discover. Rate. Recognize.**
+A modern **startup pitch voting platform** built with **Next.js, MongoDB, Clerk Authentication, and Tailwind CSS**.
 
-Shark Tech is a modern full-stack voting platform built with **Next.js, TypeScript, and MongoDB**, designed to showcase participating teams and allow audiences to rate individual participants through a secure 1–5 star voting system.
+Shark Tech allows participants to explore startup pitches, rate teams, and support their favorite ideas through a secure, one-vote-per-team voting system. Administrators can manage teams, control voting availability, monitor results, and remove teams from the competition.
 
-The platform combines a clean, responsive user experience with a structured backend architecture for managing teams, participants, votes, ratings, and leaderboard statistics.
-
----
-
-## ✨ Overview
-
-Shark Tech allows an audience to:
-
-* 🏢 Explore participating teams
-* 👤 Discover individual participants
-* 📖 Read team and participant descriptions
-* ⭐ Rate participants from **1 to 5 stars**
-* 📊 View real-time average ratings
-* 🏆 Explore the leaderboard
-* 🔐 Provide administrators with controlled management capabilities
-
-Every vote is processed server-side and reflected in the participant's rating statistics.
+> **Back the Bold. Sink the Ordinary.**
 
 ---
 
-## 🎯 Core Concept
+## ✨ Features
 
-```text
-                    🦈 SHARK TECH
-                          │
-             ┌────────────┴────────────┐
-             │                         │
-           TEAMS                  LEADERBOARD
-             │                         │
-             ▼                         ▲
-      Team Information                 │
-             │                         │
-             ▼                         │
-       PARTICIPANTS                    │
-             │                         │
-             ▼                         │
-        ⭐ 1 — 5 ⭐                      │
-             │                         │
-             ▼                         │
-          VOTE ────────────────────────┘
-```
+### 👥 For Voters
 
-The system maintains each participant's:
+* 🔐 Secure authentication with **Clerk**
+* 🏢 Browse all participating startup teams
+* 📄 View individual startup pitch details
+* ⭐ Rate teams from **1–5 stars**
+* 🗳️ One vote per authenticated user for each team
+* 🚫 Prevent duplicate voting
+* 🔴 Real-time team voting status
+* 📊 View total backers/votes
+* 📱 Fully responsive interface
+* 🔔 Toast notifications for voting actions and errors
 
-```text
-Rating Sum
-     +
-Total Votes
-     ↓
-Average Rating
-```
+### 🛠️ For Administrators
 
-For example:
+* 📊 Admin dashboard
+* ➕ Add new startup teams
+* 🔴 Start/stop voting for individual teams
+* 🗑️ Delete teams
+* 📈 Monitor total votes
+* ⭐ Monitor team rating scores
+* 🏆 Leaderboard-style team overview
+* ⚡ Optimistic UI updates for admin actions
 
-```text
-Rating Sum = 442
-Total Votes = 102
+### 🎨 UI & UX
 
-Average = 442 / 102
-        = 4.33 ⭐
-```
+* Dark, modern **Shark Tank-inspired** interface
+* Cyan + amber visual theme
+* Responsive navigation
+* Mobile-friendly menu
+* Animated status indicators
+* Hover and transition effects
+* Glassmorphism-inspired cards
+* Responsive tables and layouts
+* `react-hot-toast` feedback notifications
 
 ---
 
-# 🚀 Features
+## 🧰 Tech Stack
 
-## 👥 Participant Discovery
-
-Browse all participants through a responsive card-based interface.
-
-Each participant can have:
-
-* Profile image
-* Name
-* Description
-* Team association
-* Average rating
-* Total vote count
+| Technology          | Purpose                          |
+| ------------------- | -------------------------------- |
+| **Next.js**         | Full-stack React framework       |
+| **React**           | Frontend UI                      |
+| **TypeScript**      | Type safety                      |
+| **MongoDB**         | Database                         |
+| **Clerk**           | Authentication & user management |
+| **Tailwind CSS**    | Styling                          |
+| **Lucide React**    | UI icons                         |
+| **React Icons**     | Rating/star icons                |
+| **React Hot Toast** | User notifications               |
 
 ---
 
-## 🏢 Team Profiles
+## 🏗️ Project Architecture
 
-Each team has its own profile containing:
-
-* Team name
-* Team description
-* Logo
-* Category
-* Associated participants
+The application follows a **Next.js App Router** architecture.
 
 ```text
-Team
-│
-├── Description
-├── Logo
-├── Category
-│
-└── Participants
-      ├── Participant A
-      ├── Participant B
-      └── Participant C
+Browser
+   │
+   ▼
+Next.js App Router
+   │
+   ├── Server Components
+   │      ├── Home
+   │      ├── Teams
+   │      ├── Team Details
+   │      └── Dashboard
+   │
+   ├── Client Components
+   │      ├── Navbar
+   │      ├── VoteBox
+   │      ├── AdminDashboard
+   │      └── VoterDashboard
+   │
+   ├── API Routes
+   │      ├── /api/teams
+   │      ├── /api/teams/[id]
+   │      ├── /api/teams/[id]/vote
+   │      └── /api/settings
+   │
+   ▼
+MongoDB
+   │
+   ├── teams
+   ├── users
+   └── settings
 ```
 
 ---
 
-## ⭐ Audience Voting
-
-Audience members can rate participants using a simple 1–5 star interface.
+## 📂 Project Structure
 
 ```text
-How would you rate this participant?
-
-☆ ☆ ☆ ☆ ☆
-
-          [ Submit Vote ]
-```
-
-Votes are processed through the backend rather than being calculated on the client.
-
----
-
-## 📊 Dynamic Rating System
-
-The backend maintains:
-
-```text
-ratingSum
-totalVotes
-averageRating
-```
-
-This allows rating statistics to be updated efficiently without recalculating every historical vote on every request.
-
-### Example
-
-```text
-Existing:
-
-ratingSum  = 437
-totalVotes = 101
-
-New vote:
-
-★★★★★
-
-Updated:
-
-ratingSum  = 442
-totalVotes = 102
-
-Average:
-
-442 / 102 = 4.33
-```
-
----
-
-## 🔄 Vote Updating
-
-If a voter submits another rating for the same participant, the system updates the existing vote instead of creating another duplicate vote.
-
-```text
-Previous rating
-      ↓
-      5 ⭐
-
-New rating
-      ↓
-      3 ⭐
-
-ratingSum += 3 - 5
-```
-
-This keeps the statistics consistent.
-
----
-
-## 🏆 Leaderboard
-
-Participants can be displayed according to their average rating and voting statistics.
-
-Example:
-
-```text
-┌──────┬─────────────────┬────────┬────────┐
-│ Rank │ Participant     │ Rating │ Votes  │
-├──────┼─────────────────┼────────┼────────┤
-│  01  │ Participant A   │ 4.82 ⭐│ 312    │
-│  02  │ Participant B   │ 4.71 ⭐│ 287    │
-│  03  │ Participant C   │ 4.65 ⭐│ 241    │
-└──────┴─────────────────┴────────┴────────┘
-```
-
----
-
-# 🏗️ Architecture
-
-Shark Tech uses a **full-stack Next.js architecture**.
-
-There is no need for a separate Express server.
-
-```text
-                         CLIENT
-                           │
-                           ▼
-                    Next.js / React
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-      Server Components          Client Components
-             │                           │
-             │                    Voting Interaction
-             │                           │
-             └─────────────┬─────────────┘
-                           │
-                           ▼
-                  Next.js Route Handlers
-                           │
-                           ▼
-                    Service Layer
-                           │
-                           ▼
-                     Mongoose
-                           │
-                           ▼
-                       MongoDB
-```
-
----
-
-# 🧩 Application Architecture
-
-```text
-src/
-│
+.
 ├── app/
-│   ├── participants/
+│   ├── api/
+│   │   ├── settings/
+│   │   │   └── route.ts
+│   │   │
+│   │   └── teams/
+│   │       ├── route.ts
+│   │       └── [id]/
+│   │           ├── route.ts
+│   │           └── vote/
+│   │               └── route.ts
+│   │
+│   ├── dashboard/
+│   │   └── page.tsx
+│   │
 │   ├── teams/
-│   ├── leaderboard/
-│   ├── admin/
-│   └── api/
+│   │   ├── page.tsx
+│   │   └── [id]/
+│   │       └── page.tsx
+│   │
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
 │
 ├── components/
-│   ├── participants/
-│   ├── teams/
-│   ├── voting/
-│   └── leaderboard/
+│   ├── AdminDashboard.tsx
+│   ├── Navbar.tsx
+│   ├── SyncUser.tsx
+│   ├── VoteBox.tsx
+│   └── VoterDashboard.tsx
+│
+├── lib/
+│   └── mongodb.ts
 │
 ├── models/
 │   ├── Team.ts
-│   ├── Participant.ts
-│   └── Vote.ts
-│
-├── services/
-│   ├── team.service.ts
-│   ├── participant.service.ts
-│   └── vote.service.ts
-│
-├── validations/
-│   ├── team.validation.ts
-│   ├── participant.validation.ts
-│   └── vote.validation.ts
-│
-├── lib/
-│   ├── mongodb.ts
-│   ├── auth.ts
-│   └── utils.ts
-│
-├── types/
-│   ├── team.ts
-│   ├── participant.ts
-│   └── vote.ts
-│
-└── hooks/
-    └── useVote.ts
-```
-
----
-
-# 🗄️ Database Architecture
-
-MongoDB contains three primary collections.
-
-```text
-                 MongoDB
-                    │
-       ┌────────────┼────────────┐
-       │            │            │
-       ▼            ▼            ▼
-     Teams    Participants     Votes
-       │            │            │
-       │            │            │
-       └────────────┴────────────┘
-```
-
-### Team
-
-```json
-{
-  "_id": "team_id",
-  "name": "Team Alpha",
-  "description": "Innovative technology team",
-  "logo": "image-url",
-  "category": "Technology"
-}
-```
-
-### Participant
-
-```json
-{
-  "_id": "participant_id",
-  "teamId": "team_id",
-  "name": "Participant A",
-  "image": "image-url",
-  "description": "Participant description",
-  "ratingSum": 442,
-  "totalVotes": 102,
-  "averageRating": 4.33
-}
-```
-
-### Vote
-
-```json
-{
-  "_id": "vote_id",
-  "participantId": "participant_id",
-  "voterIdentifier": "unique-voter-id",
-  "rating": 5
-}
-```
-
----
-
-# 🔐 Voting Integrity
-
-The voting system is designed to prevent simple duplicate submissions.
-
-A vote is uniquely associated with:
-
-```text
-voterIdentifier
-       +
-participantId
-```
-
-The database enforces this relationship through a compound unique index.
-
-```text
-┌───────────────────────┐
-│ voterIdentifier       │
-│ participantId         │
-│ rating                │
-└───────────────────────┘
-```
-
-This means the same voter cannot create unlimited duplicate votes for the same participant.
-
-> For high-stakes production voting, additional protections such as authentication, rate limiting, CAPTCHA/bot protection, and identity verification can be introduced.
-
----
-
-# ⚡ Efficient Rating Updates
-
-Instead of recalculating every vote whenever someone submits a rating:
-
-```text
-❌ Inefficient
-
-Fetch all votes
-      ↓
-Calculate sum
-      ↓
-Calculate average
-      ↓
-Save result
-```
-
-Shark Tech uses an incremental approach:
-
-```text
-✅ Efficient
-
-New Vote
-   ↓
-ratingSum += rating
-   ↓
-totalVotes += 1
-   ↓
-averageRating = ratingSum / totalVotes
-```
-
-This keeps the voting operation efficient even as the number of votes grows.
-
----
-
-# 🔌 API Architecture
-
-## Participants
-
-### Get all participants
-
-```http
-GET /api/participants
-```
-
-### Get participant
-
-```http
-GET /api/participants/:id
-```
-
----
-
-## Teams
-
-### Get all teams
-
-```http
-GET /api/teams
-```
-
-### Get team
-
-```http
-GET /api/teams/:id
-```
-
-### Create team
-
-```http
-POST /api/teams
-```
-
----
-
-## Voting
-
-### Submit vote
-
-```http
-POST /api/votes
-```
-
-Request:
-
-```json
-{
-  "participantId": "participant_id",
-  "rating": 5
-}
-```
-
-Response:
-
-```json
-{
-  "success": true,
-  "message": "Your vote has been submitted.",
-  "data": {
-    "averageRating": 4.33,
-    "totalVotes": 102
-  }
-}
-```
-
----
-
-# 🛡️ Validation
-
-All incoming data is validated server-side using **Zod**.
-
-Example:
-
-```text
-rating
- │
- ├── integer?       ✓
- ├── minimum 1?    ✓
- └── maximum 5?    ✓
-```
-
-Invalid requests are rejected before reaching the database.
-
----
-
-# 🖥️ Frontend Architecture
-
-The application uses Next.js Server Components wherever possible.
-
-```text
-Server Component
-       │
-       ├── Fetch MongoDB data
-       │
-       └── Render initial UI
-                    │
-                    ▼
-             Client Component
-                    │
-                    ├── Star selection
-                    ├── Vote submission
-                    └── Interactive states
-```
-
-This keeps the amount of client-side JavaScript focused on areas that actually require interactivity.
-
----
-
-# 🎨 User Experience
-
-The interface is designed around a simple interaction model:
-
-```text
-Discover
-   ↓
-Explore Team
-   ↓
-View Participant
-   ↓
-Select ⭐
-   ↓
-Submit Vote
-   ↓
-See Updated Rating
-```
-
-The goal is to keep voting fast, clear, and frictionless.
-
----
-
-# 🛠️ Tech Stack
-
-| Technology                 | Purpose                    |
-| -------------------------- | -------------------------- |
-| **Next.js**                | Full-stack React framework |
-| **TypeScript**             | Type-safe development      |
-| **React**                  | UI development             |
-| **MongoDB**                | Database                   |
-| **Mongoose**               | MongoDB object modeling    |
-| **Zod**                    | Runtime validation         |
-| **Tailwind CSS**           | Styling                    |
-| **Next.js Route Handlers** | Backend API                |
-| **ESLint**                 | Code quality               |
-
----
-
-# 📁 Project Structure
-
-```text
-shark-tech/
-│
-├── src/
-│   │
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   │
-│   │   ├── participants/
-│   │   │   ├── page.tsx
-│   │   │   └── [id]/
-│   │   │       └── page.tsx
-│   │   │
-│   │   ├── teams/
-│   │   │   ├── page.tsx
-│   │   │   └── [id]/
-│   │   │       └── page.tsx
-│   │   │
-│   │   ├── leaderboard/
-│   │   │   └── page.tsx
-│   │   │
-│   │   ├── admin/
-│   │   │
-│   │   └── api/
-│   │       ├── teams/
-│   │       ├── participants/
-│   │       └── votes/
-│   │
-│   ├── components/
-│   │
-│   ├── models/
-│   │   ├── Team.ts
-│   │   ├── Participant.ts
-│   │   └── Vote.ts
-│   │
-│   ├── services/
-│   │
-│   ├── validations/
-│   │
-│   ├── lib/
-│   │
-│   ├── types/
-│   │
-│   └── hooks/
+│   └── User.ts
 │
 ├── public/
 │
 ├── .env.local
 ├── package.json
-├── tsconfig.json
-└── next.config.ts
+└── README.md
 ```
 
 ---
 
-# 🚀 Getting Started
+## 🔐 Authentication
 
-## 1. Clone the repository
+Authentication is handled using **Clerk**.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/shark-tech.git
+The application supports:
+
+* User registration
+* User login
+* User profile management
+* Authenticated voting
+* Server-side authentication checks
+
+Each authenticated Clerk user is synchronized with MongoDB through the `SyncUser` component.
+
+Users are stored using their unique Clerk ID:
+
+```ts
+{
+  clerkId: string,
+  email: string,
+  firstName: string | null,
+  lastName: string | null,
+  role: "voter" | "admin",
+  createdAt: Date
+}
 ```
 
-## 2. Navigate to the project
+---
 
-```bash
-cd shark-tech
+## 🗳️ Voting System
+
+The voting system is designed around **authenticated users**.
+
+When a user votes:
+
+1. Clerk verifies the user's identity.
+2. The server checks whether the selected team exists.
+3. The server verifies that voting is currently active for the team.
+4. The server checks the team's `votedUsers` array.
+5. If the user has already voted, the request is rejected.
+6. Otherwise, the rating is added.
+7. The vote count is increased.
+8. The user's Clerk ID is added to `votedUsers`.
+9. The team's average rating is recalculated.
+
+### Rating
+
+Users can give:
+
+```text
+⭐ 1
+⭐ 2
+⭐ 3
+⭐ 4
+⭐ 5
 ```
 
-## 3. Install dependencies
+The average rating is calculated using:
+
+```text
+New Average =
+(Current Average × Current Votes + New Rating)
+÷ New Vote Count
+```
+
+The admin dashboard converts the 5-star average into a score out of 100:
+
+```text
+Score = Average Rating × 20
+```
+
+---
+
+## 🗄️ MongoDB Collections
+
+The application uses a MongoDB database named:
+
+```text
+SHARK_TECH_DB
+```
+
+### `teams`
+
+Example document:
+
+```js
+{
+  _id: ObjectId("..."),
+  name: "Example Startup",
+  description: "Startup pitch description...",
+  votes: 25,
+  averageRating: 4.4,
+  isLive: true,
+  votedUsers: [
+    "user_xxxxxxxxx",
+    "user_yyyyyyyyy"
+  ],
+  createdAt: ISODate("...")
+}
+```
+
+### `users`
+
+Example document:
+
+```js
+{
+  _id: ObjectId("..."),
+  clerkId: "user_xxxxxxxxx",
+  email: "user@example.com",
+  firstName: "John",
+  lastName: "Doe",
+  role: "voter",
+  createdAt: ISODate("...")
+}
+```
+
+### `settings`
+
+The project also supports a system settings document:
+
+```js
+{
+  _id: "system_settings",
+  votingIsLive: true
+}
+```
+
+---
+
+## 🔌 API Endpoints
+
+### Teams
+
+#### `GET /api/teams`
+
+Returns all registered teams.
+
+#### `POST /api/teams`
+
+Creates a new team.
+
+Example request:
+
+```json
+{
+  "name": "Example Startup",
+  "description": "Our startup pitch..."
+}
+```
+
+---
+
+### Team Management
+
+#### `PATCH /api/teams/[id]`
+
+Updates a team's voting status.
+
+Example:
+
+```json
+{
+  "isLive": true
+}
+```
+
+#### `DELETE /api/teams/[id]`
+
+Deletes a team from the database.
+
+---
+
+### Voting
+
+#### `POST /api/teams/[id]/vote`
+
+Submits a rating for a team.
+
+Example request:
+
+```json
+{
+  "rating": 5
+}
+```
+
+The endpoint requires an authenticated Clerk user.
+
+---
+
+### System Settings
+
+#### `GET /api/settings`
+
+Returns the current global voting setting.
+
+#### `POST /api/settings`
+
+Updates the global voting setting.
+
+Example:
+
+```json
+{
+  "isLive": true
+}
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+```
+
+Navigate into the project:
+
+```bash
+cd YOUR_REPOSITORY
+```
+
+---
+
+### 2. Install Dependencies
+
+Using npm:
 
 ```bash
 npm install
 ```
 
-## 4. Configure environment variables
+Or using yarn:
 
-Create:
-
-```text
-.env.local
+```bash
+yarn install
 ```
 
-Add:
+Or using pnpm:
+
+```bash
+pnpm install
+```
+
+---
+
+### 3. Configure Environment Variables
+
+Create a `.env.local` file in the project root:
 
 ```env
 MONGODB_URI=your_mongodb_connection_string
 
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=your_secure_password
-
-NODE_ENV=development
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 ```
 
-## 5. Start the development server
+> Never commit `.env.local` or expose your MongoDB connection string or Clerk secret key publicly.
+
+---
+
+### 4. Start the Development Server
 
 ```bash
 npm run dev
@@ -664,224 +431,315 @@ http://localhost:3000
 
 ---
 
-# 🔑 Environment Variables
+## 🔑 User Roles
 
-| Variable         | Description               |
-| ---------------- | ------------------------- |
-| `MONGODB_URI`    | MongoDB connection string |
-| `ADMIN_USERNAME` | Admin username            |
-| `ADMIN_PASSWORD` | Admin password            |
-| `NODE_ENV`       | Application environment   |
-
-> Never commit `.env.local` to GitHub.
-
----
-
-# 📊 Voting Flow
+The application currently supports two roles:
 
 ```text
-User
- │
- ▼
-Participant Card
- │
- ▼
-Participant Details
- │
- ▼
-Select Rating
- │
- ▼
-POST /api/votes
- │
- ▼
-Zod Validation
- │
- ▼
-Check Participant
- │
- ▼
-Check Existing Vote
- │
- ├───────────────┐
- │               │
- ▼               ▼
-New Vote       Existing Vote
- │               │
- ▼               ▼
-Create         Update
- │               │
- └───────┬───────┘
-         ▼
-   Update Statistics
-         │
-         ▼
-    MongoDB
-         │
-         ▼
- Updated Rating
-         │
-         ▼
-      UI Update
+voter
+admin
 ```
 
----
+### Voter
 
-# 🧠 Engineering Principles
+A normal authenticated user can:
 
-Shark Tech follows several core engineering principles:
+* Browse teams
+* View pitches
+* Rate teams
+* Vote once per team
+* Access the voter dashboard
 
-### Separation of Concerns
+### Admin
 
-Database logic, business logic, validation, API routes, and UI components are separated.
+An administrator can:
 
-### Server-Side Validation
-
-Client-side validation improves UX, but server-side validation remains authoritative.
-
-### Atomic Updates
-
-Vote statistics are updated using MongoDB atomic operations.
-
-### Type Safety
-
-TypeScript is used throughout the application.
-
-### Reusable Components
-
-Common UI functionality is extracted into reusable components.
-
-### Server-First Rendering
-
-Next.js Server Components are preferred when client-side interactivity is unnecessary.
-
-### Security by Design
-
-Sensitive database credentials and administrative operations remain server-side.
+* View the leaderboard
+* Add teams
+* Start/stop voting
+* Delete teams
+* Monitor votes
+* Monitor rating scores
 
 ---
 
-# 🔮 Roadmap
+## 📊 Admin Dashboard
 
-### Phase 1 — Core Platform
-
-* [x] Next.js architecture
-* [x] MongoDB integration
-* [x] Team model
-* [x] Participant model
-* [x] Vote model
-* [x] Star rating system
-* [x] Average rating calculation
-* [x] Leaderboard
-
-### Phase 2 — Administration
-
-* [ ] Complete admin dashboard
-* [ ] Team management
-* [ ] Participant management
-* [ ] Vote analytics
-* [ ] Search and filtering
-* [ ] Pagination
-
-### Phase 3 — Security
-
-* [ ] User authentication
-* [ ] Rate limiting
-* [ ] CAPTCHA / bot protection
-* [ ] Stronger voting verification
-* [ ] Audit logging
-
-### Phase 4 — Advanced Experience
-
-* [ ] Live leaderboard updates
-* [ ] Voting analytics
-* [ ] Rating distribution charts
-* [ ] Participant comparison
-* [ ] Competition phases
-* [ ] Real-time statistics
-
----
-
-# 📸 Screenshots
-
-> Add project screenshots here once the UI is finalized.
-
-### Homepage
+The administrator dashboard provides a centralized control panel containing:
 
 ```text
-Coming soon...
+┌─────────────────────────────────────────────────────────┐
+│              LEADERBOARD & CONTROLS                     │
+├─────────────────────────────────────────────────────────┤
+│ Startup       Votes       Score        Actions          │
+│ ─────────────────────────────────────────────────────── │
+│ Team Alpha      25         88.0        Start   Delete  │
+│ Team Beta       19         92.0        Stop    Delete  │
+│ Team Gamma      12         76.0        Start   Delete  │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Participants
+Administrators can control the voting state of each team independently.
+
+---
+
+## 📱 Responsive Design
+
+The interface is designed for:
+
+* 💻 Desktop
+* 📱 Mobile
+* 📟 Tablet
+
+The navigation automatically switches to a mobile menu on smaller screens.
+
+---
+
+## 🎯 Main User Flow
 
 ```text
-Coming soon...
-```
-
-### Voting Interface
-
-```text
-Coming soon...
-```
-
-### Leaderboard
-
-```text
-Coming soon...
+                    ┌───────────────┐
+                    │     Home      │
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │     Teams     │
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │  Team Pitch   │
+                    └───────┬───────┘
+                            │
+                     User Logged In?
+                       /          \
+                     No            Yes
+                     │              │
+                     ▼              ▼
+                  Log In       Check Vote
+                                    │
+                                    ▼
+                              ┌─────────────┐
+                              │ Rate 1–5 ⭐ │
+                              └──────┬──────┘
+                                     │
+                                     ▼
+                              Vote Recorded
 ```
 
 ---
 
-# 🌐 Deployment
+## 🛡️ Voting Protection
 
-The application can be deployed using a modern Next.js hosting platform.
+The voting API performs server-side validation rather than relying only on the frontend.
 
-Typical production architecture:
+It verifies:
+
+* Authentication
+* Team existence
+* Team voting status
+* Rating range
+* Previous vote by the current user
+
+A user's Clerk ID is stored in the team's `votedUsers` array to prevent duplicate votes.
+
+---
+
+## 🎨 Design Philosophy
+
+The UI follows a dark, modern competition-style visual language inspired by startup pitch arenas.
+
+### Primary Colors
 
 ```text
-                   Internet
-                       │
-                       ▼
-                 Next.js App
-                       │
-            ┌──────────┴──────────┐
-            │                     │
-         Frontend              API
-            │                     │
-            └──────────┬──────────┘
-                       │
-                       ▼
-                    MongoDB
+Background     → Slate 950
+Primary        → Cyan
+Accent         → Amber
+Success        → Emerald
+Danger         → Rose
+Secondary      → Slate
+```
+
+The design uses:
+
+* Gradient typography
+* Glass-like cards
+* Subtle borders
+* Background radial glows
+* Animated indicators
+* Hover transitions
+* Responsive layouts
+
+---
+
+## ⚡ Performance & Architecture
+
+The project takes advantage of Next.js Server Components for database-driven pages.
+
+Examples include:
+
+* Home page team statistics
+* Team listing
+* Team details
+* Dashboard role detection
+
+Client Components are used where browser-side interaction is required, such as:
+
+* Navigation menu
+* Voting interface
+* Admin controls
+* Form handling
+* Toast notifications
+
+---
+
+## 🧑‍💻 Development Highlights
+
+This project demonstrates practical implementation of:
+
+* Next.js App Router
+* Server Components
+* Client Components
+* REST API routes
+* MongoDB native driver
+* Clerk authentication
+* Role-based dashboard rendering
+* Server-side authentication
+* Protected voting logic
+* Optimistic UI updates
+* Dynamic MongoDB queries
+* Responsive Tailwind CSS design
+* TypeScript interfaces
+* Error handling
+* Toast-based user feedback
+
+---
+
+## 🔮 Future Improvements
+
+Potential improvements for future versions include:
+
+* [ ] Real-time leaderboard updates
+* [ ] Global voting countdown timer
+* [ ] Team logos and images
+* [ ] Team search and filtering
+* [ ] Advanced admin analytics
+* [ ] Vote history
+* [ ] Admin authentication middleware
+* [ ] Stronger server-side role authorization for admin APIs
+* [ ] Pagination for large numbers of teams
+* [ ] Vote activity analytics
+* [ ] Export voting results
+* [ ] Deployment analytics
+* [ ] Improved database indexing
+* [ ] Rate limiting for API endpoints
+
+---
+
+## 🧪 Example Voting Scenario
+
+Suppose a team currently has:
+
+```text
+Votes: 10
+Average Rating: 4.2
+```
+
+A new authenticated user gives:
+
+```text
+Rating: 5
+```
+
+The new average becomes:
+
+```text
+(4.2 × 10 + 5) ÷ 11
+= 4.27
+```
+
+The dashboard then displays:
+
+```text
+Score = 4.27 × 20
+      = 85.4 / 100
 ```
 
 ---
 
-# 🤝 Contributing
+## 🌐 Deployment
 
-Contributions, ideas, and improvements are welcome.
+The project can be deployed using platforms that support Next.js applications and environment variables.
 
-```bash
-git checkout -b feature/your-feature
+Before deployment, configure:
+
+```env
+MONGODB_URI=...
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
+
+CLERK_SECRET_KEY=...
 ```
 
-Make your changes, commit them, and open a pull request.
+Also make sure the production domain is configured correctly in your Clerk application settings.
 
 ---
 
-# 📄 License
+## 🔒 Security Notes
 
-This project is currently intended as a personal/project showcase.
+Sensitive credentials should never be committed to GitHub.
 
-License information can be added when the project is officially released.
+Make sure `.gitignore` contains:
+
+```gitignore
+.env
+.env.local
+.env.*.local
+node_modules
+.next
+```
+
+Never expose:
+
+```text
+MONGODB_URI
+CLERK_SECRET_KEY
+```
+
+in client-side code or public repositories.
+
+##
 
 ---
 
-<div align="center">
+## 👨‍💻 Author
 
-## 🦈 Shark Tech
+**Habibur Rahman**
 
-**Discover. Rate. Recognize.**
+Full Stack Developer | React Developer | Aircraft Maintenance Engineering Student
 
-Built with Next.js · TypeScript · MongoDB
+### Skills
 
-</div>
+* React
+* Next.js
+* JavaScript
+* TypeScript
+* Node.js
+* Express.js
+* MongoDB
+* Firebase
+* Clerk
+* Tailwind CSS
+
+---
+
+## ⭐ Support
+
+If you find this project useful or interesting, consider giving the repository a ⭐ on GitHub.
+
+---
+
+<p align="center">
+  Built with ❤️ using Next.js, MongoDB & Clerk
+</p>
