@@ -8,14 +8,18 @@ import { Loader2 } from "lucide-react";
 export default function VoteBox({
   teamId,
   isLive,
+  initialHasVoted, // <-- Receive new prop
 }: {
   teamId: string;
   isLive: boolean;
+  initialHasVoted: boolean; // <-- Define type
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [isVoting, setIsVoting] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
+  
+  // Set initial state based on database check
+  const [hasVoted, setHasVoted] = useState(initialHasVoted);
 
   const handleVote = async (rating: number) => {
     if (!isLive) {
@@ -38,7 +42,7 @@ export default function VoteBox({
       if (!res.ok) throw new Error(data.error || "Failed to vote");
 
       toast.success(`You awarded ${rating} stars!`);
-      setHasVoted(true);
+      setHasVoted(true); // Lock the UI locally after successful vote
     } catch (error: any) {
       toast.error(error.message);
       setSelected(null);
@@ -47,16 +51,7 @@ export default function VoteBox({
     }
   };
 
-  if (!isLive) {
-    return (
-      <div className="p-6 rounded-xl border border-rose-500/30 bg-rose-500/10 text-center">
-        <p className="text-rose-400 font-semibold tracking-wide uppercase text-sm">
-          Voting is Closed
-        </p>
-      </div>
-    );
-  }
-
+  // If the user already voted (checked from DB or just now), show the success message
   if (hasVoted) {
     return (
       <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center">
@@ -67,6 +62,18 @@ export default function VoteBox({
     );
   }
 
+  // If voting is not live, show the closed message
+  if (!isLive) {
+    return (
+      <div className="p-6 rounded-xl border border-rose-500/30 bg-rose-500/10 text-center">
+        <p className="text-rose-400 font-semibold tracking-wide uppercase text-sm">
+          Voting is Closed
+        </p>
+      </div>
+    );
+  }
+
+  // Otherwise, show the voting stars
   return (
     <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm text-center">
       <p className="text-slate-300 font-medium mb-4">

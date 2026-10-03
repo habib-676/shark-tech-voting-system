@@ -6,11 +6,17 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const client = await clientPromise;
   const db = client.db("SHARK_TECH_DB");
+
   const settings = await db
     .collection("settings")
     .findOne({ _id: "system_settings" });
+
+  // Check if ANY team is currently accepting votes
+  const liveTeam = await db.collection("teams").findOne({ isLive: true });
+  const isLive = !!liveTeam;
+
+  // Get total registered teams
   const teamCount = await db.collection("teams").countDocuments();
-  const isLive = settings?.votingIsLive || false;
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">

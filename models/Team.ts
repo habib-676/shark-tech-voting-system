@@ -4,4 +4,6 @@ export interface Team {
   votes: number;
   averageRating: number;
   description: string;
+  isLive: boolean;
+  votedUsers?: string[];
 }
