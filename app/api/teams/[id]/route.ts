@@ -25,3 +25,24 @@ export async function PATCH(
     );
   }
 }
+// DELETE method to remove a team
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const { id } = await params;
+
+    const client = await clientPromise;
+    const db = client.db("SHARK_TECH_DB");
+
+    await db.collection("teams").deleteOne({ _id: new ObjectId(id) });
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete team" },
+      { status: 500 },
+    );
+  }
+}
