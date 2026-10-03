@@ -11,6 +11,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
+    { name: "Home", href: "/" },
     { name: "Teams", href: "/teams" },
     { name: "Dashboard", href: "/dashboard" },
   ];
@@ -31,7 +32,7 @@ export default function Navbar() {
               <path d="M12 2C12 2 12.5 8 16 11C18.5 13.1 21.5 14 22 14C22 14 20 16 16.5 16C12.5 16 10 18 8 22C7 22 6 20.5 6 18C6 14.5 9 10 9 7C9 4 12 2 12 2Z" />
             </svg>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden md:flex flex-col">
             <span className="font-extrabold text-base tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-200 to-amber-400">
               SHARK TECH
             </span>

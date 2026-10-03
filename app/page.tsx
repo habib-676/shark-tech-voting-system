@@ -1,12 +1,15 @@
 import Link from "next/link";
 import clientPromise from "@/lib/mongodb";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const client = await clientPromise;
   const db = client.db("SHARK_TECH_DB");
   const settings = await db
     .collection("settings")
     .findOne({ _id: "system_settings" });
+  const teamCount = await db.collection("teams").countDocuments();
   const isLive = settings?.votingIsLive || false;
 
   return (
@@ -19,7 +22,7 @@ export default async function Home() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-400 text-xs font-semibold uppercase tracking-widest backdrop-blur-md mb-6">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          The Tech is Live • Audience Choice Awards
+          Shark Tech is Live • Audience Choice Awards
         </div>
 
         {/* Brand Title */}
@@ -54,7 +57,9 @@ export default async function Home() {
             <span className="text-xs uppercase text-slate-400 font-medium">
               Total Startups
             </span>
-            <p className="text-2xl font-bold text-cyan-400 mt-1">24 Teams</p>
+            <p className="text-2xl font-bold text-cyan-400 mt-1">
+              {teamCount} {teamCount === 1 ? "Team" : "Teams"}
+            </p>
           </div>
           <div className="p-3 md:border-r border-slate-800">
             <span className="text-xs uppercase text-slate-400 font-medium">
@@ -66,7 +71,7 @@ export default async function Home() {
             <span className="text-xs uppercase text-slate-400 font-medium">
               Shark Pool
             </span>
-            <p className="text-2xl font-bold text-emerald-400 mt-1">$2.5M</p>
+            <p className="text-2xl font-bold text-emerald-400 mt-1">৳8k</p>
           </div>
           <div className="p-3">
             <span className="text-xs uppercase text-slate-400 font-medium">
