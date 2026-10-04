@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { isLive } = await req.json();
@@ -28,7 +28,7 @@ export async function PATCH(
 // DELETE method to remove a team
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;

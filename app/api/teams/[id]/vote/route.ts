@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-import { auth } from "@clerk/nextjs/server"; // <-- Import Clerk auth
+import { auth } from "@clerk/nextjs/server"; 
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 1. Authenticate the user

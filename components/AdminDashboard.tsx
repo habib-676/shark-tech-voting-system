@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Loader2, Power, Trash2 } from "lucide-react";
+import { Loader2, Power, Trash2, QrCode } from "lucide-react"; // <-- Added QrCode icon
+import QRCodeModal from "./QRCodeModal"; // <-- Import the new modal
 
 interface TeamResult {
   _id: string;
@@ -17,6 +18,13 @@ export default function AdminDashboard() {
   const [teams, setTeams] = useState<TeamResult[]>([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
   const [formData, setFormData] = useState({ name: "", description: "" });
+
+  // QR Modal States
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [selectedQrData, setSelectedQrData] = useState<{
+    name: string;
+    url: string;
+  } | null>(null);
 
   const fetchTeams = async () => {
     try {
@@ -35,7 +43,7 @@ export default function AdminDashboard() {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -66,7 +74,7 @@ export default function AdminDashboard() {
 
     // Optimistic UI update
     setTeams(
-      teams.map((t) => (t._id === teamId ? { ...t, isLive: newStatus } : t)),
+      teams.map((t) => (t._id === teamId ? { ...t, isLive: newStatus } : t))
     );
 
     try {
@@ -78,28 +86,21 @@ export default function AdminDashboard() {
 
       if (!res.ok) throw new Error();
       toast.success(
-        newStatus ? "Voting OPENED for team" : "Voting CLOSED for team",
+        newStatus ? "Voting OPENED for team" : "Voting CLOSED for team"
       );
     } catch (error) {
       // Revert if failed
       setTeams(
-        teams.map((t) =>
-          t._id === teamId ? { ...t, isLive: currentStatus } : t,
-        ),
+        teams.map((t) => (t._id === teamId ? { ...t, isLive: currentStatus } : t))
       );
       toast.error("Could not update team status.");
     }
   };
 
-  //Delete Team Logic
   const handleDeleteTeam = async (teamId: string) => {
-    // Add a confirmation dialog to prevent accidental clicks
-    if (
-      !window.confirm("Are you sure you want to permanently delete this team?")
-    )
+    if (!window.confirm("Are you sure you want to permanently delete this team?"))
       return;
 
-    // Optimistic UI removal
     const previousTeams = [...teams];
     setTeams(teams.filter((t) => t._id !== teamId));
 
@@ -111,10 +112,17 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error();
       toast.success("Team permanently deleted.");
     } catch (error) {
-      // Revert if failed
       setTeams(previousTeams);
       toast.error("Could not delete the team.");
     }
+  };
+
+  // Trigger QR Modal
+  const handleOpenQr = (teamId: string, teamName: string) => {
+    // Dynamically get the current domain (e.g., http://localhost:3000 or https://yourdomain.com)
+    const url = `${window.location.origin}/teams/${teamId}`;
+    setSelectedQrData({ name: teamName, url });
+    setQrModalOpen(true);
   };
 
   return (
@@ -129,7 +137,7 @@ export default function AdminDashboard() {
             Leaderboard & Controls
           </h2>
           <p className="text-sm text-slate-400">
-            Manage individual team access, monitor scores, and remove teams.
+            Manage individual team access, monitor scores, and generate QR codes.
           </p>
         </div>
 
@@ -138,10 +146,7 @@ export default function AdminDashboard() {
             <thead className="bg-slate-950/50 text-slate-400 uppercase font-mono text-xs border-b border-slate-800">
               <tr>
                 <th className="px-4 py-4 font-semibold">Startup Name</th>
-                <th className="px-4 py-4 font-semibold text-center">
-                  Total Votes
-                </th>
-                {/* Updated Header for Score */}
+                <th className="px-4 py-4 font-semibold text-center">Total Votes</th>
                 <th className="px-4 py-4 font-semibold text-center">
                   Score (Out of 100)
                 </th>
@@ -178,7 +183,6 @@ export default function AdminDashboard() {
                       {team.votes}
                     </td>
 
-                    {/* NEW: Calculate Score dynamically (averageRating * 20) */}
                     <td className="px-4 py-4 text-center font-mono text-amber-400 font-bold">
                       {(team.averageRating * 20).toFixed(1)}
                     </td>
@@ -200,7 +204,16 @@ export default function AdminDashboard() {
                           {team.isLive ? "Stop" : "Start"}
                         </button>
 
-                        {/* NEW: Delete Button */}
+                        {/* NEW: QR Code Button */}
+                        <button
+                          onClick={() => handleOpenQr(team._id, team.name)}
+                          title="Generate QR Code"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10 transition-colors"
+                        >
+                          <QrCode className="w-4 h-4" />
+                        </button>
+
+                        {/* Delete Button */}
                         <button
                           onClick={() => handleDeleteTeam(team._id)}
                           title="Delete Team"
@@ -277,6 +290,14 @@ export default function AdminDashboard() {
           </div>
         </form>
       </div>
+
+      {/* Render the QR Code Modal at the root level of this component */}
+      <QRCodeModal
+        isOpen={qrModalOpen}
+        onClose={() => setQrModalOpen(false)}
+        teamUrl={selectedQrData?.url || ""}
+        teamName={selectedQrData?.name || ""}
+      />
     </div>
   );
 }
