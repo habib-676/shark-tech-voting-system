@@ -4,21 +4,23 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
+import { SignInButton, SignUpButton } from "@clerk/nextjs"; // <-- Import Clerk Buttons
 
 export default function VoteBox({
   teamId,
   isLive,
-  initialHasVoted, // <-- Receive new prop
+  initialHasVoted,
+  isAuthenticated, // <-- Receive new prop
 }: {
   teamId: string;
   isLive: boolean;
-  initialHasVoted: boolean; // <-- Define type
+  initialHasVoted: boolean;
+  isAuthenticated: boolean; // <-- Define type
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   
-  // Set initial state based on database check
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
 
   const handleVote = async (rating: number) => {
@@ -42,7 +44,7 @@ export default function VoteBox({
       if (!res.ok) throw new Error(data.error || "Failed to vote");
 
       toast.success(`You awarded ${rating} stars!`);
-      setHasVoted(true); // Lock the UI locally after successful vote
+      setHasVoted(true);
     } catch (error: any) {
       toast.error(error.message);
       setSelected(null);
@@ -51,7 +53,30 @@ export default function VoteBox({
     }
   };
 
-  // If the user already voted (checked from DB or just now), show the success message
+  // 1. If NOT authenticated, prompt to log in FIRST
+  if (!isAuthenticated) {
+    return (
+      <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm text-center">
+        <p className="text-slate-300 font-medium mb-5">
+          You must be logged in to cast your equity vote.
+        </p>
+        <div className="flex items-center justify-center gap-4">
+          <SignInButton mode="modal">
+            <button className="px-6 py-2.5 text-sm font-semibold rounded-lg border border-amber-400/30 bg-amber-400/10 text-amber-400 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200 shadow-sm shadow-amber-400/10">
+              Log In
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="px-6 py-2.5 text-sm font-semibold rounded-lg bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all duration-200 shadow-sm shadow-cyan-500/20">
+              Sign Up
+            </button>
+          </SignUpButton>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. If the user already voted
   if (hasVoted) {
     return (
       <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center">
@@ -62,7 +87,7 @@ export default function VoteBox({
     );
   }
 
-  // If voting is not live, show the closed message
+  // 3. If voting is not live
   if (!isLive) {
     return (
       <div className="p-6 rounded-xl border border-rose-500/30 bg-rose-500/10 text-center">
@@ -73,7 +98,7 @@ export default function VoteBox({
     );
   }
 
-  // Otherwise, show the voting stars
+  // 4. Otherwise, show the interactive voting stars
   return (
     <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm text-center">
       <p className="text-slate-300 font-medium mb-4">

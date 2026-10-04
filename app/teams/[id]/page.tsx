@@ -47,11 +47,12 @@ export default async function TeamDetailsPage({ params }: { params: { id: string
           </div>
           
           <div className="mt-8 pt-8 border-t border-slate-800">
-            {/* 3. Pass initialHasVoted down to the component */}
+            {/* 3. Pass isAuthenticated down to the component */}
             <VoteBox 
               teamId={team._id.toString()} 
               isLive={team.isLive === true} 
               initialHasVoted={hasAlreadyVoted}
+              isAuthenticated={!!userId} // <-- NEW PROP
             />
           </div>
         </div>
