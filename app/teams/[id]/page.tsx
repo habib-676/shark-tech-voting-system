@@ -38,7 +38,7 @@ export default async function TeamDetailsPage({ params }: { params: { id: string
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 mb-6 gap-4">
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-100">{team.name}</h1>
             <div className="px-4 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm font-mono">
-              Total Backers: <span className="text-amber-400 font-bold text-lg">{team.votes || 0}</span>
+              Total Backers: <span className="text-amber-400 font-bold text-lg">Hidden</span>
             </div>
           </div>
           <div className="prose prose-invert max-w-none mb-10">
