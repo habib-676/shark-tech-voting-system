@@ -84,14 +84,15 @@ export default async function TeamsPage() {
                 </div>
 
                 <div className="pt-5 mt-6 border-t border-slate-800/80 flex items-center justify-between">
-                  <div>
+                  {/* Hiding vote counts */}
+                  {/* <div>
                     <span className="block text-[11px] uppercase tracking-wider text-slate-500">
                       Votes
                     </span>
                     <span className="text-sm font-semibold text-slate-200">
                       {team.votes} Backers
                     </span>
-                  </div>
+                  </div> */}
                   <Link
                     href={`/teams/${team._id}`}
                     className="px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all active:scale-95"
